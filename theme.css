@@ -1,0 +1,147 @@
+* {
+    color: whitesmoke;
+    font-family: monospace;
+    font-size: x-large;
+}
+
+body {
+    background-color: #303030;
+}
+
+button {
+    border: none;
+    background-color: #707070;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+input[type=range] {
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #202020;
+}
+
+#content {
+    width: 100%;
+    height: calc(100vh - 20px);
+}
+
+#gridContainer {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-rows: 1fr 80px;
+    grid-gap: 10px
+}
+
+#leftContainer {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#rightContainer {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+#bottomContainer {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+}
+
+#canvasContainer {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#leftContainer, #rightContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
+#colorPickerContainer, #toolContainer, #markerWidthContainer, #layerContainer {
+    background-color: #505050;
+    border-radius: 20px;
+    height: 100%;
+    width: 100%
+}
+
+#colorPickerContainer {
+    display: grid;
+    table-layout: fixed;
+    grid-template-columns: auto auto auto;
+}
+
+#colorPickerContainer > span {
+    margin: auto;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    border-radius: 20%;
+    cursor: pointer;
+}
+
+#toolContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#toolContainer > button {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+#markerWidthContainer {
+    display: flexbox;
+    flex-direction: column;
+    text-align: center;
+}
+
+#markerWidthDisplay {
+    width: 50px;
+    height: 40px;
+    background-color: #707070;
+    border-radius: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#markerWidthSlider{
+    width: 150px;
+}
+
+#layerContainer > span {
+    display: block;
+    margin: 10px;
+}
+
+#bottomContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#bottomContainer > button {
+    width: 100px;
+}
+
+#canvas {
+    background-color: white;
+    border-radius: 20px;
+    cursor: crosshair;
+}
