@@ -128,7 +128,7 @@ function init() {
     canvas.height = canvasContainer.offsetHeight;
     ctx = canvas.getContext('2d');
 
-    // TODO: Fixed jagged line when pivoting cursor.
+    // TODO: Fixe jagged line when drawing curve quicky.
     canvas.addEventListener(
         'mousedown',
         function(e) {
@@ -201,7 +201,10 @@ function drawPath(toolMode) {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = markerWidth;
+    // Line ends will be round
     ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
     ctx.closePath();
