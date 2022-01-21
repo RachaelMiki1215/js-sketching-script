@@ -1,120 +1,8 @@
-/*var canvas, ctx, flag = false,
-    prevX = 0,
-    currX = 0,
-    prevY = 0,
-    currY = 0,
-    dot_flag = false;
+var canvas, ctx, canvasContainer;
+var x, y;
 
-var x = "black",
-    y = 2;
-
-function init() {
-    canvas = document.getElementById('can');
-    ctx = canvas.getContext("2d");
-    w = canvas.width;
-    h = canvas.height;
-
-    canvas.addEventListener("mousemove", function (e) {
-        findxy('move', e)
-    }, false);
-    canvas.addEventListener("mousedown", function (e) {
-        findxy('down', e)
-    }, false);
-    canvas.addEventListener("mouseup", function (e) {
-        findxy('up', e)
-    }, false);
-    canvas.addEventListener("mouseout", function (e) {
-        findxy('out', e)
-    }, false);
-}
-
-function color(obj) {
-    switch (obj.id) {
-        case "green":
-            x = "green";
-            break;
-        case "blue":
-            x = "blue";
-            break;
-        case "red":
-            x = "red";
-            break;
-        case "yellow":
-            x = "yellow";
-            break;
-        case "orange":
-            x = "orange";
-            break;
-        case "black":
-            x = "black";
-            break;
-        case "white":
-            x = "white";
-            break;
-    }
-    if (x == "white") y = 14;
-    else y = 2;
-
-}
-
-function draw() {
-    ctx.beginPath();
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(currX, currY);
-    ctx.strokeStyle = x;
-    ctx.lineWidth = y;
-    ctx.stroke();
-    ctx.closePath();
-}
-
-function erase() {
-    var m = confirm("Want to clear");
-    if (m) {
-        ctx.clearRect(0, 0, w, h);
-        document.getElementById("canvasimg").style.display = "none";
-    }
-}
-
-function save() {
-    document.getElementById("canvasimg").style.border = "2px solid";
-    var dataURL = canvas.toDataURL();
-    document.getElementById("canvasimg").src = dataURL;
-    document.getElementById("canvasimg").style.display = "inline";
-}
-
-function findxy(res, e) {
-    if (res == 'down') {
-        prevX = currX;
-        prevY = currY;
-        currX = e.clientX - canvas.offsetLeft;
-        currY = e.clientY - canvas.offsetTop;
-
-        flag = true;
-        dot_flag = true;
-        if (dot_flag) {
-            ctx.beginPath();
-            ctx.fillStyle = x;
-            ctx.fillRect(currX, currY, 2, 2);
-            ctx.closePath();
-            dot_flag = false;
-        }
-    }
-    if (res == 'up' || res == "out") {
-        flag = false;
-    }
-    if (res == 'move') {
-        if (flag) {
-            prevX = currX;
-            prevY = currY;
-            currX = e.clientX - canvas.offsetLeft;
-            currY = e.clientY - canvas.offsetTop;
-            draw();
-        }
-    }
-}*/
-
-var canvas, ctx;
-var prevX, prevY, currX, currY;
+var points = [];
+var beginPoint = null;
 
 var drawingFlag = false;
 var toolMode = 'brush';
@@ -123,12 +11,9 @@ var markerWidth = 10;
 
 function init() {
     canvas = document.getElementById('canvas');
-    canvasContainer = document.getElementById('canvasContainer')
-    canvas.width = canvasContainer.offsetWidth;
-    canvas.height = canvasContainer.offsetHeight;
+    canvasContainer = document.getElementById('canvasContainer');
     ctx = canvas.getContext('2d');
 
-    // TODO: Fixe jagged line when drawing curve quicky.
     canvas.addEventListener(
         'mousedown',
         function(e) {
@@ -147,88 +32,308 @@ function init() {
             canvas_mouseMove(e);
         }
     );
-
-    // TODO: Figure out how to resize canvas based on window size
-    /*canvasContainer.addEventListener(
-        'resize',
-        function() {
-            canvas.width = canvasContainer.offsetWidth;
-            canvas.height = canvasContainer.offsetHeight;
+    canvas.addEventListener(
+        'mouseout',
+        function(e) {
+            canvas_mouseOut(e);
         }
-    )*/
+    );
 }
 
 function canvas_mouseDown(e) {
-    //console.log('Mouse has been pressed at: (' + e.clientX + ',' + e.clientY + ')');
-    
     drawingFlag = true;
 
     updateCoord(e);
-}
 
-function canvas_mouseUp(e) {
-    //console.log('Mouse has been released at: (' + e.clientX + ',' + e.clientY + ')');
-    
-    drawingFlag = false;
-    isDot = false;
-
-    updateCoord(e);
-
-    drawPath();
+    if(e.shiftKey) {
+        beginPoint = points[0];
+        endPoint = points[1];
+        switch (toolMode) {
+            case 'brush':
+                drawLine(beginPoint, endPoint);
+                break;
+            case 'eraser':
+                eraseLine(beginPoint, endPoint);
+                break;
+            default:
+                break;
+        };
+    }
+    else {
+        points = points.slice(-1);
+        beginPoint = points[0];
+        switch (toolMode) {
+            case 'brush':
+                drawDot(beginPoint);
+                break;
+            case 'eraser':
+                eraseDot(beginPoint);
+                break;
+            default:
+                break;
+        };
+    };
 }
 
 function canvas_mouseMove(e) {
     if(drawingFlag){
-        //console.log('Mouse drag at: (' + e.clientX + ',' + e.clientY + ')');
-
         updateCoord(e);
 
         if(drawingFlag){
-            drawPath();
+            switch (toolMode) {
+                case 'brush':
+                    if(points.length > 3) {
+                        let lastTwoPoints = points.slice(-2);
+                        let controlPoint = lastTwoPoints[0];
+                        x = (lastTwoPoints[0].x + lastTwoPoints[1].x) / 2;
+                        y = (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2;
+                        let endPoint = {x, y}
+                        drawCurve(beginPoint, controlPoint, endPoint);
+                        beginPoint = endPoint;
+                    }
+                    break;
+                case 'eraser':
+                    if(points.length > 3) {
+                        let lastTwoPoints = points.slice(-2);
+                        let controlPoint = lastTwoPoints[0];
+                        x = (lastTwoPoints[0].x + lastTwoPoints[1].x) / 2;
+                        y = (lastTwoPoints[0].y + lastTwoPoints[1].y) / 2;
+                        let endPoint = {x, y}
+                        eraseCurve(beginPoint, controlPoint, endPoint);
+                        beginPoint = endPoint;
+                    }
+                    break; 
+                default:
+                    break;
+            }
         }
     }
 }
 
-function updateCoord(e) {
-    prevX = currX;
-    prevY = currY;
-    currX = e.clientX - canvas.offsetLeft;
-    currY = e.clientY - canvas.offsetTop;
+function canvas_mouseUp(e) {
+    drawingFlag = false;
 
+    updateCoord(e);
+
+    switch (toolMode) {
+        case 'brush':
+            if(points.length > 3) {
+                let lastTwoPoints = points.slice(-2);
+                let controlPoint = lastTwoPoints[0];
+                let endPoint = lastTwoPoints[1];
+                drawCurve(beginPoint, controlPoint, endPoint);
+            }
+            break;
+        case 'eraser':
+            if(points.length > 3) {
+                let lastTwoPoints = points.slice(-2);
+                let controlPoint = lastTwoPoints[0];
+                let endPoint = lastTwoPoints[1];
+                eraseCurve(beginPoint, controlPoint, endPoint);
+            }
+            break;
+        default:
+            break;
+    }
+
+    points = points.slice(-1);
+    beginPoint = null;
 }
 
-function drawPath(toolMode) {
+function canvas_mouseOut(e) {
+
+    updateCoord(e);
+
+    if(drawingFlag) {
+        switch (toolMode) {
+            case 'brush':
+                if(points.length > 3) {
+                    let lastTwoPoints = points.slice(-2);
+                    let controlPoint = lastTwoPoints[0];
+                    let endPoint = lastTwoPoints[1];
+                    drawCurve(beginPoint, controlPoint, endPoint);
+                }
+                else {
+                    let lastTwoPoints = points.slice(-2);
+                    drawLine(lastTwoPoints[0], lastTwoPoints[1]);
+                }
+                break;
+            case 'eraser':
+                if(points.length > 3) {
+                    let lastTwoPoints = points.slice(-2);
+                    let controlPoint = lastTwoPoints[0];
+                    let endPoint = lastTwoPoints[1];
+                    eraseCurve(beginPoint, controlPoint, endPoint);
+                }
+                else {
+                    let lastTwoPoints = points.slice(-2);
+                    eraseLine(lastTwoPoints[0], lastTwoPoints[1]);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    drawingFlag = false;
+    points = points.slice(-1);
+    beginPoint = null;
+}
+
+function updateCoord(e) {
+    x = e.clientX - canvas.offsetLeft + canvasContainer.scrollLeft + window.scrollX;
+    y = e.clientY - canvas.offsetTop + canvasContainer.scrollTop + window.scrollY;
+
+    points.push({x,y});
+}
+
+function drawDot(beginPoint) {
     ctx.beginPath();
+
     ctx.strokeStyle = color;
     ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'source-over'
     // Line ends will be round
     ctx.lineCap = "round";
     // Line joins (continuously drawn points/edges) will be round
     ctx.lineJoin = 'round';
-    ctx.moveTo(prevX, prevY);
-    ctx.lineTo(currX, currY);
-    ctx.closePath();
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.lineTo(beginPoint.x, beginPoint.y);
+
     ctx.stroke();
+
+    ctx.closePath();
+}
+
+function eraseDot(beginPoint) {
+    ctx.beginPath();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'destination-out'
+    // Line ends will be round
+    ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.lineTo(beginPoint.x, beginPoint.y);
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
+function drawLine(beginPoint, endPoint) {
+    ctx.beginPath;
+    
+    ctx.strokeStyle = color;
+    ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'source-over'
+    // Line ends will be round
+    ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.lineTo(endPoint.x, endPoint.y);
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
+function eraseLine(beginPoint, endPoint) {
+    ctx.beginPath;
+    
+    ctx.strokeStyle = color;
+    ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'destination-out'
+    // Line ends will be round
+    ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.lineTo(endPoint.x, endPoint.y);
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
+function drawCurve(beginPoint, controlPoint, endPoint) {
+    ctx.beginPath();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'source-over'
+    // Line ends will be round
+    ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
+function eraseCurve(beginPoint, controlPoint, endPoint) {
+    ctx.beginPath();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = markerWidth;
+    // Set to actually have colors for pixels
+    ctx.globalCompositeOperation = 'destination-out'
+    // Line ends will be round
+    ctx.lineCap = "round";
+    // Line joins (continuously drawn points/edges) will be round
+    ctx.lineJoin = 'round';
+
+    ctx.moveTo(beginPoint.x, beginPoint.y);
+    ctx.quadraticCurveTo(controlPoint.x, controlPoint.y, endPoint.x, endPoint.y);
+
+    ctx.stroke();
+
+    ctx.closePath();
+}
+
+function changeToBrush() {
+    toolMode = 'brush';
+}
+
+function changeToEraser() {
+    toolMode = 'eraser';
 }
 
 function changeColor(item) {
     color = document.getElementById(item.id).style.backgroundColor;
-    //console.log(item.id);
 }
 
-
-// TODO: Figure out how to go back to original color when going back to brush mode.
-function changeToEraser(){
-    color = 'white';
+function changeWidth() {
+    let markerWidthSliderVal = document.getElementById('markerWidthSlider').value;
+    markerWidth = markerWidthSliderVal;
+    document.getElementById('markerWidthDisplay').innerHTML = markerWidthSliderVal;
 }
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-
-// TODO: Make this work
-function saveCanvas() {
-    var image = canvas.toDataURL("image/png").replace("image/png");
-    window.location.href=image;
+// Reference: https://daily-dev-tips.com/posts/vanilla-javascript-save-canvas-as-an-image/
+function exportCanvas() {
+    const link = document.createElement('a');
+    link.download = 'download.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    link.delete;
 }
