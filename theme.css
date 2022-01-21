@@ -8,7 +8,7 @@ body {
     background-color: #303030;
 }
 
-button {
+button, input[type=button] {
     border: none;
     background-color: #707070;
     padding: 10px;
@@ -17,12 +17,12 @@ button {
     transition: 0.3s;
 }
 
-input[type=range] {
-    cursor: pointer;
+button:hover, input[type=button]:hover {
+    background-color: #202020;
 }
 
-button:hover {
-    background-color: #202020;
+input[type=range] {
+    cursor: pointer;
 }
 
 #content {
@@ -36,7 +36,7 @@ button:hover {
     display: grid;
     grid-template-columns: 200px 1fr 200px;
     grid-template-rows: 1fr 80px;
-    grid-gap: 10px
+    grid-gap: 10px;
 }
 
 #leftContainer {
@@ -66,7 +66,7 @@ button:hover {
     gap: 10px;
 }
 
-#colorPickerContainer, #toolContainer, #markerWidthContainer, #layerContainer {
+#colorPickerContainer, #toolContainer, #markerWidthContainer, #canvasOpsContainer, #layerContainer {
     background-color: #505050;
     border-radius: 20px;
     height: 100%;
@@ -76,14 +76,14 @@ button:hover {
 #colorPickerContainer {
     display: grid;
     table-layout: fixed;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto auto;
 }
 
 #colorPickerContainer > span {
     margin: auto;
     display: flex;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     border-radius: 20%;
     cursor: pointer;
 }
@@ -91,6 +91,7 @@ button:hover {
 #toolContainer {
     display: flex;
     flex-direction: column;
+    padding-top: 10px;
     gap: 10px;
 }
 
@@ -98,7 +99,7 @@ button:hover {
     width: 80%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 10px;
+    margin-top: 0;
 }
 
 #markerWidthContainer {
@@ -140,8 +141,16 @@ button:hover {
     width: 100px;
 }
 
+#canvasContainer {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    display: flex;
+}
+
 #canvas {
     background-color: white;
-    border-radius: 20px;
     cursor: crosshair;
+    margin: auto;
+    width: 512px;
+    height: 512px;
 }
