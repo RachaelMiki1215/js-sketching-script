@@ -16,30 +16,31 @@
                     <span id="color5" style="background-color: orchid;" onclick="changeColor(this)"></span>
                     <span id="color6" style="background-color: black;" onclick="changeColor(this)"></span>
                     <span id="color7" style="background-color: gray;" onclick="changeColor(this)"></span>
-                    <span id="color8" style="background-color: saddlebrown;" onclick="changeColor(this)"></span>
+                    <span id="color8" style="background-color: white;" onclick="changeColor(this)"></span>
                 </div>
                 <div id="toolContainer">
-                    <button type="button" onclick="changeToBrush()">Brush</button>
-                    <button type="button" onclick="">Bucket (Under Construction)</button>
-                    <button type="button" onclick="changeToEraser()">Eraser</button>
+                    <button id="brushButton" type="button" onclick="changeToBrush()">Brush</button>
+                    <button id="bucketButton" type="button" onclick="">Bucket (Under Construction)</button>
+                    <button id="eraserButton" type="button" onclick="changeToEraser()">Eraser</button>
                 </div>
                 <div id="markerWidthContainer">
-                    (Under Construction)
                     <div id="markerWidthDisplay">10</div>
-                    <input id="markerWidthSlider" type="range" min="1" max="100" value="20" onchange="">
+                    <input id="markerWidthSlider" type="range" min="1" max="100" value="20" onchange="changeWidth()">
                 </div>
             </div>
             <div id="rightContainer">
+                <div id="canvasOpsContainer">
+                </div>
                 <div id="layerContainer">
                     <span>(Planning to add layer functionality here later on.)</span>
                 </div>
             </div>
             <div id="bottomContainer">
                 <button type="button" onclick="clearCanvas()">Clear</button>
-                <button type="button" onclick="saveCanvas()">Save (Under Construction)</button>
+                <button type="button" onclick="exportCanvas()">Export</button>
             </div>
             <div id="canvasContainer">
-                <canvas id="canvas"></canvas>
+                <canvas id="canvas" width="512px" height="512px"></canvas>
             </div>
         </div>
     </div>
