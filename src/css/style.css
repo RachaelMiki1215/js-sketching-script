@@ -1,0 +1,206 @@
+/*Variables*/
+:root {
+    --mainBackgroundColor: #303030;
+    --sectionColor: #404040;
+    --buttonColor: #505050;
+    --fontIconColor: whitesmoke;
+    --highlightColor: lightcoral;
+}
+
+* {
+    color: var(--fontIconColor);
+    font-family: monospace;
+    font-size: x-large;
+}
+
+/* Custom scrollbar */
+/* Works in Chrome, Edge, Safari, Opera */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+body {
+    margin: 0;
+    background-color: var(--mainBackgroundColor);
+}
+
+button, input[type=button], input[type=range], input[type=number] {
+    border: none;
+    background-color: var(--buttonColor);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+button, input[type=button], input[type=range], .toolIcon, .layerOpsIcon {
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+button:hover, input[type=button]:hover {
+    background-color: var(--highlightColor);
+    color: var(--mainBackgroundColor);
+}
+
+#gridContainer {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 50px 1fr 200px;
+    grid-template-rows: 50px 1fr;
+    gap: 10px;
+}
+
+#toolContainer {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 5px;
+    align-items: center;
+    gap: 10px;
+}
+
+#rightContainer {
+    grid-column: 3;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#topbar {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    padding: 5px;
+    gap: 10px;
+    align-items: center;
+}
+
+#canvasContainer {
+    grid-column: 2;
+    grid-row: 2;
+    overflow-y: overlay;
+    overflow-x: overlay;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#rightContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#topbar, #colorPickerContainer, #toolContainer, #toolWidthContainer, #canvasOpsContainer, #layerContainer {
+    background-color: var(--sectionColor);
+    height: 100%;
+    width: 100%
+}
+
+#toolWidthContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px;
+    height: min-content;
+}
+
+#colorPickerContainer {
+    display: grid;
+    table-layout: fixed;
+    grid-template-columns: auto auto auto auto;
+}
+
+#colorPickerContainer > span {
+    margin: auto;
+    display: flex;
+    width: 20px;
+    height: 20px;
+    border-radius: 20%;
+    cursor: pointer;
+}
+
+#toolContainer > button {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+}
+
+#layerContainer > span {
+    display: block;
+    margin: 10px;
+}
+
+#bottomContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#bottomContainer > button {
+    width: 100px;
+}
+
+#canvasArea {
+    background-color: white;
+    width: 512px;
+    height: 512px;
+    position: absolute;
+}
+
+.layer {
+    cursor: crosshair;
+    position: absolute;
+}
+
+.toolIcon {
+    width: 30px;
+    height: 30px;
+}
+.layerOpsIcon {
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+}
+.toolIcon, .layerOpsIcon {
+    fill: var(--fontIconColor);
+}
+.toolIcon:hover, .layerOpsIcon:hover {
+    fill: var(--highlightColor);
+}
+
+#layerList {
+    background-color: transparent;
+    width: 100%;
+    height: 300px;
+    border-width: 0;
+    display: block;
+}
+
+.layerLabel {
+    padding: 5px 10px;
+    width: 100%;
+}
+
+.layerLabel:hover {
+    cursor: pointer;
+    background-color: var(--highlightColor);
+}
