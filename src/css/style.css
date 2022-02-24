@@ -169,6 +169,8 @@ button:hover, input[type=button]:hover {
 .layer {
     cursor: crosshair;
     position: absolute;
+    touch-action: none;
+    -ms-touch-action: none;
 }
 
 .toolIcon {
